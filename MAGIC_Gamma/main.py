@@ -76,3 +76,6 @@ train, X_train, y_train = scale_dataset(train, OverSample=True)
 valid, X_valid, y_valid = scale_dataset(valid, OverSample=False)
 test, X_test, y_test = scale_dataset(test, OverSample=False)
 
+# Train the Model
+
+## KNN Model 
