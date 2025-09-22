@@ -13,46 +13,66 @@ resources: https://archive.ics.uci.edu/dataset/159/magic+gamma+telescope
 
 """
 
-# Import Library
-import warnings
-import string
+# import Library
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from imblearn.over_sampling import RandomOverSampler
 
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder, OrdinalEncoder
-from sklearn.impute import SimpleImputer, KNNImputer
-from scipy.stats import boxcox
-from scipy.special import inv_boxcox
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
+# Setup the Datasets
+cols = ["fLength", "fWidth", "fSize", "fConc", "fConc1", "fAsym", "fM3Long", "fM3Trans", "fAlpha", "fDist", "class"]
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
+path = "./data/magic04.data"
 
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, matthews_corrcoef
+# Dataset doesn't contain any headers
+df = pd.read_csv(path, header=None, names=cols)
 
-warnings.filterwarnings("ignore")
+# Check the first 5 rows
+# print(df.head())
 
-path = "magic04.data"
-col = [
-  "fLength", "fWidth", "fSize", "fConc", "fConc1",
-  "fAsym", "fM3Long", "fM3Trans", "fAlpha", "fDist",
-  "class"
-]
+# Checking the prediction values
+# print(df['class'].unique()) ['g', 'h']
 
-df = pd.read_csv(path, header=None, names=col)
-
-# quick view
-print("Training data shape:", df.shape)
-
-# explore dataset
-print("\nDataset Info:")
-print(df.info())
-print("--" * 20)
+# Converting the alphabetical value into numerical 
+df['class'] = (df['class'] == 'g').astype(int)
 
 print(df.head())
+
+for label in cols[:-1]:
+  plt.hist(df[df['class'] == 1][label], color='blue', label='gamma', alpha=0.7, density=True)
+  plt.hist(df[df['class'] == 0][label], color='red', label='hedron', alpha=0.7, density=True)
+  plt.title(label)
+  plt.ylabel("Probability")
+  plt.xlabel(label)
+  plt.legend()
+  plt.show()
+
+# Training, Validation, Testing Datatest (Distribution)
+
+train, valid, test = np.split(df.sample(frac=1), [int(0.6 * len(df)), int(0.8 * len(df))])
+
+# Scaling the dataset to get the matching size of data in each train, valid and test dataset
+
+def scale_dataset(dataframe, OverSample=False):
+  X = dataframe[dataframe.columns[:-1]].values
+  y = dataframe[dataframe.columns[-1]].values
+  
+  scaler = StandardScaler()
+  X = scaler.fit_transform(X)
+  
+  if OverSample:
+    ros = RandomOverSampler()
+    X, y = ros.fit_resample(X, y)
+    
+  data = np.hstack((X, np.reshape(y, (-1, 1))))
+  
+  return data, X, y
+
+# Evenly Rebalance the train, valid, and test dataset
+
+train, X_train, y_train = scale_dataset(train, OverSample=True)
+valid, X_valid, y_valid = scale_dataset(valid, OverSample=False)
+test, X_test, y_test = scale_dataset(test, OverSample=False)
+
