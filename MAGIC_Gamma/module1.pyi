@@ -150,3 +150,5 @@ y_pred = (y_pred > 0.5).astype(int).reshape(-1,)
 # Accuracy 0.87 (87%)
 
 print(classification_report(y_test, y_pred))
+
+# This is the simple way of training the model without any feature engineering and fix the skewness, or outlier
