@@ -27,6 +27,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
+import tensorflow as tf
 from sklearn.metrics import classification_report
 
 # Setup the Datasets
@@ -131,3 +132,21 @@ svc_model.fit(X_train, y_train)
 
 # print(classification_report(y_test, y_pred))
 
+## Neural Network
+
+nn_model = tf.keras.Sequential([
+  tf.keras.layers.Dense(32, activation='relu', input_shape=(10,)),
+  tf.keras.layers.Dense(32, activation='relu'),
+  tf.keras.layers.Dense(1, activation='sigmoid')
+])
+
+nn_model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss='binary_crossentropy', metrics=['accuracy'])
+
+history = nn_model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2)
+
+y_pred = nn_model.predict(X_test)
+y_pred = (y_pred > 0.5).astype(int).reshape(-1,)
+
+# Accuracy 0.87 (87%)
+
+print(classification_report(y_test, y_pred))
