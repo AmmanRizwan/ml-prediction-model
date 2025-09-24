@@ -21,6 +21,14 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import RandomOverSampler
 
+# ML Model Training
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+
 # Setup the Datasets
 cols = ["fLength", "fWidth", "fSize", "fConc", "fConc1", "fAsym", "fM3Long", "fM3Trans", "fAlpha", "fDist", "class"]
 
@@ -79,3 +87,47 @@ test, X_test, y_test = scale_dataset(test, OverSample=False)
 # Train the Model
 
 ## KNN Model 
+
+knn_model = KNeighborsClassifier(n_neighbors=2)
+knn_model.fit(X_train, y_train)
+
+# y_pred = knn_model.predict(X_test)
+
+# Accuracy 0.79 (79%) #
+
+# print(classification_report(y_test, y_pred))
+
+
+## Naive Bayes
+
+nb_model = GaussianNB()
+nb_model.fit(X_train, y_train)
+
+# y_pred = nb_model.predict(X_test)
+
+# Accuracy 0.72 (72%) #
+
+# print(classification_report(y_test, y_pred))
+
+## Logistic Regression
+
+lr_model = LogisticRegression()
+lr_model.fit(X_train, y_train)
+
+# y_pred = lr_model.predict(X_test)
+
+# Accuracy 0.79 (79%)
+
+# print(classification_report(y_test, y_pred))
+
+## Support Vector Machine
+
+svc_model = SVC()
+svc_model.fit(X_train, y_train)
+
+# y_pred = svc_model.predict(X_test)
+
+# Accuracy 0.87 (87%)
+
+# print(classification_report(y_test, y_pred))
+
